@@ -1,3 +1,5 @@
+from copy import deepcopy
+
 from environments.GameState import GameState
 from games.tictactoe.TicTacToeInformationState import TicTacToeInformationState
 
@@ -85,7 +87,8 @@ class TicTacToeGameState(GameState):
         return self.current_player
 
     def get_information_state_for_player(self, player_id: int) -> 'InformationState':
-        return TicTacToeInformationState()
+        return TicTacToeInformationState(self.current_player,
+                                         deepcopy(self.board))
 
     def get_available_actions_id_for_player(self, player_id: int) -> 'Iterable(int)':
         if player_id != self.current_player:

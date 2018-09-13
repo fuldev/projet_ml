@@ -1,3 +1,4 @@
+from agents.CommandLineAgent import CommandLineAgent
 from agents.RandomAgent import RandomAgent
 from environments import Agent
 from environments.GameRunner import GameRunner
@@ -15,7 +16,6 @@ class BasicTicTacToeRunner(GameRunner):
 
         while round_id < max_rounds or round_id == -1:
             gs = TicTacToeGameState()
-            print(gs)
             terminal = False
             while not terminal:
                 current_player = gs.get_current_player_id()
@@ -37,11 +37,9 @@ class BasicTicTacToeRunner(GameRunner):
                         (1 if other_player == 0 else -1) * score,
                         terminal)
 
-                print(gs)
-
             if round_id != -1:
                 round_id += 1
 
 
 if __name__ == "__main__":
-    BasicTicTacToeRunner(RandomAgent(), RandomAgent()).run(10)
+    BasicTicTacToeRunner(RandomAgent(), CommandLineAgent()).run(10)

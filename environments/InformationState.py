@@ -1,3 +1,4 @@
 
 class InformationState:
-    NotImplementedError
+    def __str__(self):
+        raise NotImplementedError
