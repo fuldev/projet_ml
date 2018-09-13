@@ -6,7 +6,8 @@ from environments.Agent import Agent
 
 class CommandLineAgent(Agent):
     def observe(self, reward: float, terminal: bool) -> None:
-        pass
+        if terminal:
+            print("Draw" if reward == 0 else ("You Win" if reward == 1 else "You Lose"))
 
     def act(self, player_index: int, information_state: InformationState, available_actions: 'Iterable[int]') -> int:
         action_count = len(available_actions)

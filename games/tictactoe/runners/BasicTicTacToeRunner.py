@@ -1,5 +1,6 @@
 from agents.CommandLineAgent import CommandLineAgent
 from agents.RandomAgent import RandomAgent
+from agents.TabularQLearningAgent import TabularQLearningAgent
 from environments import Agent
 from environments.GameRunner import GameRunner
 from environments.GameState import GameState
@@ -42,4 +43,4 @@ class BasicTicTacToeRunner(GameRunner):
 
 
 if __name__ == "__main__":
-    BasicTicTacToeRunner(RandomAgent(), CommandLineAgent()).run(10)
+    BasicTicTacToeRunner(TabularQLearningAgent(), TabularQLearningAgent()).run(1000000)

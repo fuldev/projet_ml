@@ -64,12 +64,12 @@ class TicTacToeGameState(GameState):
 
         if board[2][0] == 1 and \
                     board[1][1] == 1 and \
-                    board[2][0] == 1:
+                    board[0][2] == 1:
                 return (1, True)
 
         if board[2][0] == -1 and \
                     board[1][1] == -1 and \
-                    board[2][0] == -1:
+                    board[0][2] == -1:
                 return (-1, True)
 
         for i in range(9):
