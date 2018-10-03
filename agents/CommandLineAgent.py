@@ -5,11 +5,19 @@ from environments.Agent import Agent
 
 
 class CommandLineAgent(Agent):
+    def __init__(self):
+        self.player_id = None
+
     def observe(self, reward: float, terminal: bool) -> None:
         if terminal:
-            print("Draw" if reward == 0 else ("You Win" if reward == 1 else "You Lose"))
+            print("Draw" if reward == 0 else ("You Win, player " if reward == 1 else "You Lose, player ") + str(
+                self.player_id))
 
     def act(self, player_index: int, information_state: InformationState, available_actions: 'Iterable[int]') -> int:
+        if self.player_id is None:
+            self.player_id = player_index
+        elif self.player_id != player_index:
+            raise Exception("WTF ? How am I supposed to play both players ?")
         action_count = len(available_actions)
 
         while True:
@@ -21,4 +29,3 @@ class CommandLineAgent(Agent):
                 break
 
         return action_id
-

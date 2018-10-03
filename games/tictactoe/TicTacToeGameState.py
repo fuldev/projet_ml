@@ -1,4 +1,5 @@
 from copy import deepcopy
+import numpy as np
 
 from environments.GameState import GameState
 from games.tictactoe.TicTacToeInformationState import TicTacToeInformationState
@@ -7,14 +8,18 @@ from games.tictactoe.TicTacToeInformationState import TicTacToeInformationState
 class TicTacToeGameState(GameState):
     def __init__(self):
         self.current_player = 0
-        self.board = [
-            [0, 0, 0],
-            [0, 0, 0],
-            [0, 0, 0]
-        ]
+        self.board = np.array(
+            (
+                (0, 0, 0),
+                (0, 0, 0),
+                (0, 0, 0)
+             )
+        )
 
     def step(self, player_id: int, action_id: int) -> \
             ('GameState', float, bool):
+        if self.current_player != player_id :
+            raise Exception("This is not this player turn !")
         val = self.board[action_id // 3][action_id % 3]
         if (val != 0):
             raise Exception("Player can't play at specified position !")
@@ -22,10 +27,36 @@ class TicTacToeGameState(GameState):
         self.board[action_id // 3][action_id % 3] = \
             1 if player_id == 0 else -1
 
-        (score, terminal) = self.compute_current_score_and_end_game()
+        (score, terminal) = self.compute_current_score_and_end_game_more_efficient()
 
         self.current_player = (self.current_player + 1) % 2
         return (self, score, terminal)
+
+    def compute_current_score_and_end_game_more_efficient(self):
+        board = self.board
+        if self.board[0][0] + self.board[0][1] + self.board[0][2] == 3 or \
+                self.board[1][0] + self.board[1][1] + self.board[1][2] == 3 or \
+                self.board[2][0] + self.board[2][1] + self.board[2][2] == 3 or \
+                self.board[0][0] + self.board[1][0] + self.board[2][0] == 3 or \
+                self.board[0][1] + self.board[1][1] + self.board[2][1] == 3 or \
+                self.board[0][2] + self.board[1][2] + self.board[2][2] == 3 or \
+                self.board[0][0] + self.board[1][1] + self.board[2][2] == 3 or \
+                self.board[2][0] + self.board[1][1] + self.board[0][2] == 3:
+            return 1, True
+
+        if self.board[0][0] + self.board[0][1] + self.board[0][2] == -3 or \
+                self.board[1][0] + self.board[1][1] + self.board[1][2] == -3 or \
+                self.board[2][0] + self.board[2][1] + self.board[2][2] == -3 or \
+                self.board[0][0] + self.board[1][0] + self.board[2][0] == -3 or \
+                self.board[0][1] + self.board[1][1] + self.board[2][1] == -3 or \
+                self.board[0][2] + self.board[1][2] + self.board[2][2] == -3 or \
+                self.board[0][0] + self.board[1][1] + self.board[2][2] == -3 or \
+                self.board[2][0] + self.board[1][1] + self.board[0][2] == -3:
+            return -1.0, True
+
+        if 0 in self.board:
+            return 0.0, False
+        return 0.0, True
 
     def compute_current_score_and_end_game(self):
         board = self.board
@@ -88,7 +119,7 @@ class TicTacToeGameState(GameState):
 
     def get_information_state_for_player(self, player_id: int) -> 'InformationState':
         return TicTacToeInformationState(self.current_player,
-                                         deepcopy(self.board))
+                                         self.board.copy())
 
     def get_available_actions_id_for_player(self, player_id: int) -> 'Iterable(int)':
         if player_id != self.current_player:
