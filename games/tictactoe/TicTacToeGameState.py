@@ -1,11 +1,13 @@
 from copy import deepcopy
 import numpy as np
 
+from environments import InformationState
 from environments.GameState import GameState
 from games.tictactoe.TicTacToeInformationState import TicTacToeInformationState
 
 
 class TicTacToeGameState(GameState):
+
     def __init__(self):
         self.current_player = 0
         self.board = np.array(
@@ -137,6 +139,12 @@ class TicTacToeGameState(GameState):
                 )
             str += "\n"
         return str
+
+    def copy_game_state(self):
+        gs = TicTacToeGameState()
+        gs.board = self.board.copy()
+        gs.current_player = self.current_player
+        return gs
 
 
 if __name__ == "__main__":

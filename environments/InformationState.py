@@ -1,3 +1,5 @@
+from environments import GameState
+
 
 class InformationState:
 
@@ -5,4 +7,7 @@ class InformationState:
         raise NotImplementedError
 
     def __str__(self):
+        raise NotImplementedError
+
+    def create_game_state_from_information_state(self):
         raise NotImplementedError

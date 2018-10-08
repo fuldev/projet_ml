@@ -1,8 +1,10 @@
+from environments import GameState
 from environments.InformationState import InformationState
 import numpy as np
 
 
 class TicTacToeInformationState(InformationState):
+
     def __hash__(self):
         return hash((self.board * (1 if self.current_player == 0 else -1)).tobytes())
         # sum = self.current_player
@@ -36,8 +38,9 @@ class TicTacToeInformationState(InformationState):
             str_acc += "\n"
         return str_acc
 
-
-if __name__ == "__main__":
-    i = 1
-    elt = 2
-    print(((elt) * 3) ^ (i + 1))
+    def create_game_state_from_information_state(self):
+        from games.tictactoe.TicTacToeGameState import TicTacToeGameState
+        gs = TicTacToeGameState()
+        gs.board = self.board.copy()
+        gs.current_player = self.current_player
+        return gs

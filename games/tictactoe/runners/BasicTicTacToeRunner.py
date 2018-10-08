@@ -1,5 +1,7 @@
 import os
 
+from agents.RandomRolloutAgent import RandomRolloutAgent
+
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"  # see issue #152
 os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
@@ -15,17 +17,22 @@ import numpy as np
 
 class BasicTicTacToeRunner(GameRunner):
 
-    def __init__(self, agent1: Agent, agent2: Agent):
+    def __init__(self, agent1: Agent, agent2: Agent,
+                 print_and_reset_score_history_threshold=None,
+                 replace_player1_with_commandline_after_similar_results=None):
         self.agents = (agent1, agent2)
         self.stuck_on_same_score = 0
         self.prev_history = None
+        self.print_and_reset_score_history_threshold = print_and_reset_score_history_threshold
+        self.replace_player1_with_commandline_after_similar_results = replace_player1_with_commandline_after_similar_results
 
-    def run(self, max_rounds: int = -1) -> 'Tuple[float]':
+    def run(self, max_rounds: int = -1,
+            initial_game_state: TicTacToeGameState = TicTacToeGameState()) -> 'Tuple[float]':
         round_id = 0
 
         score_history = np.array((0, 0, 0))
         while round_id < max_rounds or round_id == -1:
-            gs = TicTacToeGameState()
+            gs = initial_game_state.copy_game_state()
             terminal = False
             while not terminal:
                 current_player = gs.get_current_player_id()
@@ -42,7 +49,7 @@ class BasicTicTacToeRunner(GameRunner):
                     terminal)
 
                 if terminal:
-                    score_history += (1 if score == 1 else 0,1 if score == -1 else 0,1 if score == 0 else 0)
+                    score_history += (1 if score == 1 else 0, 1 if score == -1 else 0, 1 if score == 0 else 0)
                     other_player = (current_player + 1) % 2
                     self.agents[other_player].observe(
                         (1 if other_player == 0 else -1) * score,
@@ -50,21 +57,26 @@ class BasicTicTacToeRunner(GameRunner):
 
             if round_id != -1:
                 round_id += 1
-                if round_id % 1000 == 0:
-                    print(score_history / 1000)
+                if self.print_and_reset_score_history_threshold is not None and \
+                        round_id % self.print_and_reset_score_history_threshold == 0:
+                    print(score_history / self.print_and_reset_score_history_threshold)
                     if self.prev_history is not None and \
-                        score_history[0] == self.prev_history[0] and \
-                        score_history[1] == self.prev_history[1] and \
-                        score_history[2] == self.prev_history[2] :
+                            score_history[0] == self.prev_history[0] and \
+                            score_history[1] == self.prev_history[1] and \
+                            score_history[2] == self.prev_history[2]:
                         self.stuck_on_same_score += 1
                     else:
                         self.prev_history = score_history
                         self.stuck_on_same_score = 0
-                    if (self.stuck_on_same_score >= 5):
+                    if (self.replace_player1_with_commandline_after_similar_results is not None and
+                            self.stuck_on_same_score >= self.replace_player1_with_commandline_after_similar_results):
                         self.agents = (CommandLineAgent(), self.agents[1])
                         self.stuck_on_same_score = 0
                     score_history = np.array((0, 0, 0))
+        return tuple(score_history)
 
 
 if __name__ == "__main__":
-    BasicTicTacToeRunner(TabularQLearningAgent(),TabularQLearningAgent()).run(100000000)
+    print(BasicTicTacToeRunner(RandomAgent(), RandomRolloutAgent(100,
+                                                                 BasicTicTacToeRunner(RandomAgent(), RandomAgent())),
+                               print_and_reset_score_history_threshold=100).run(1000000))

@@ -3,6 +3,9 @@ from environments import InformationState
 
 class GameState:
 
+    def __init__(self):
+        raise NotImplementedError
+
     # WARNING : Action space must be finite !!!!
     def step(self,
              player_id: int,
@@ -23,4 +26,7 @@ class GameState:
         raise NotImplementedError
 
     def __str__(self):
+        raise NotImplementedError
+
+    def copy_game_state(self):
         raise NotImplementedError
