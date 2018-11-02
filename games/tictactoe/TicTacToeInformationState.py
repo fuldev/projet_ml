@@ -1,6 +1,6 @@
-from environments import GameState
-from environments.InformationState import InformationState
 import numpy as np
+
+from environments.InformationState import InformationState
 
 
 class TicTacToeInformationState(InformationState):
@@ -13,12 +13,12 @@ class TicTacToeInformationState(InformationState):
         # return int(sum)
 
     def __eq__(self, other):
-        #if isinstance(other, TicTacToeInformationState):
+        # if isinstance(other, TicTacToeInformationState):
         #    return False
         return np.array_equal(self.board, other.board) and self.current_player == other.current_player
 
     def __ne__(self, other):
-        #if isinstance(other, TicTacToeInformationState):
+        # if isinstance(other, TicTacToeInformationState):
         #    return False
         return not (np.array_equal(self.board, other.board) and self.current_player == other.current_player)
 
@@ -37,6 +37,9 @@ class TicTacToeInformationState(InformationState):
                 )
             str_acc += "\n"
         return str_acc
+
+    def vectorize(self):
+        return self.board.reshape((9,))
 
     def create_game_state_from_information_state(self):
         from games.tictactoe.TicTacToeGameState import TicTacToeGameState

@@ -17,7 +17,7 @@ class TabularQLearningAgent(Agent):
 
     def observe(self, reward: float, terminal: bool) -> None:
         if self.s is not None:
-            self.r = reward
+            self.r = (self.r if self.r else 0) + reward
             self.t = terminal
 
             if terminal:

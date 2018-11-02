@@ -1,5 +1,9 @@
 import os
 
+from keras.engine.saving import load_model
+from tensorflow import keras
+
+from agents.DeepQLearningAgent import DeepQLearningAgent
 from agents.RandomRolloutAgent import RandomRolloutAgent
 
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"  # see issue #152
@@ -77,6 +81,34 @@ class BasicTicTacToeRunner(GameRunner):
 
 
 if __name__ == "__main__":
-    print(BasicTicTacToeRunner(RandomAgent(), RandomRolloutAgent(100,
-                                                                 BasicTicTacToeRunner(RandomAgent(), RandomAgent())),
-                               print_and_reset_score_history_threshold=100).run(1000000))
+    # print("Rdm vs Rdm")
+    # print(BasicTicTacToeRunner(RandomAgent(),
+    #                            RandomAgent(),
+    #                            print_and_reset_score_history_threshold=100).run(1000000))
+
+    print("Rdm vs DeepQLearning (should be around 80% wins for player 2)")
+    print(BasicTicTacToeRunner(RandomAgent(),
+                               DeepQLearningAgent(9, 9, lr=0.001, gamma=0.9, num_layers=5,
+                                                  num_hidden_per_layer=64,
+                                                  target_update_every=1000),
+                               print_and_reset_score_history_threshold=100).run(10000))
+
+    print("DeepQLearning vs Rdm (should be around 90/95% wins for player 1)")
+    print(BasicTicTacToeRunner(DeepQLearningAgent(9, 9, lr=0.001, gamma=0.9, num_layers=5,
+                                                  num_hidden_per_layer=64,
+                                                  target_update_every=1000),
+                               RandomAgent(),
+                               print_and_reset_score_history_threshold=100).run(10000))
+
+    print("DeepQLearning vs DeepQLearning (should oscillate between 95% win for player 1 and 95% " +
+          "draw if we let it run for a long time)")
+    print(BasicTicTacToeRunner(DeepQLearningAgent(9, 9, lr=0.001, gamma=0.9, num_layers=5,
+                                                  num_hidden_per_layer=64,
+                                                  target_update_every=1000),
+                               DeepQLearningAgent(9, 9, lr=0.001, gamma=0.9, num_layers=5,
+                                                  num_hidden_per_layer=64,
+                                                  target_update_every=1000),
+                               print_and_reset_score_history_threshold=100).run(100000))
+    # print(BasicTicTacToeRunner(RandomAgent(), RandomRolloutAgent(100,
+    #                                                              BasicTicTacToeRunner(RandomAgent(), RandomAgent())),
+    #                            print_and_reset_score_history_threshold=100).run(1000000))
