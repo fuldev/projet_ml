@@ -38,8 +38,8 @@ class ReinforceClassicBrain:
     def predict_policies(self, states, actions):
         return self.model.predict([states, actions])
 
-    def reinforce_loss(y_pred, y_true):
-        return -K.log(y_pred) * y_true
+    def reinforce_loss(y_true, y_pred):
+        return K.mean(-K.log(y_pred) * y_true)
 
     def train_policy(self, state, action, advantage):
         self.model.train_on_batch(
